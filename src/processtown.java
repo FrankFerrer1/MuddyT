@@ -43,6 +43,7 @@ public class processtown
             case  "v":
                 break;
             case  "w":
+                // TODO Write town data to file whose name is given in optarg.
                 break;
             case  "h":
                 System.out.print("Syntax: h [-option [parameter]]\n");
