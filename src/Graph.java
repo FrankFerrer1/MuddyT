@@ -1,49 +1,40 @@
+/**
+ * Class that holds the graph data structure and related operations
+ */
 import java.util.*;
+public class Graph{
+    private static HashMap<String,Node> graph = new HashMap<String,Node>();
+    public void add(String source, String destination, int weight){
 
-public class Graph<T> {
+        //Get nodes corresponding to source and destination vertices.
+        Node s = getNode(source);
+        Node d = getNode(destination);
 
-    // We use Hashmap to store the edges in the graph
-    private Map<T, List<T> > map = new HashMap<>();
-
-    // This function adds a new vertex to the graph
-    public void addVertex(T s)
-    {
-        map.put(s, new LinkedList<T>());
+        //add nodes to adjacent list
+        s.addAdjacent(destination,weight);
+        d.addAdjacent(source,weight);
     }
 
-    // This function adds the edge
-    // between source to destination
-    public void addEdge(T source,
-                        T destination,
-                        boolean bidirectional)
-    {
-
-        if (!map.containsKey(source))
-            addVertex(source);
-
-        if (!map.containsKey(destination))
-            addVertex(destination);
-
-        map.get(source).add(destination);
-        if (bidirectional == true) {
-            map.get(destination).add(source);
+    private static Node getNode(String id){
+        if(graph.containsKey(id))
+            return graph.get(id);
+        else{
+            Node node = new Node(id);
+            graph.put(id, node);
+            return node;
         }
     }
 
-    // Prints the adjancency list of each vertex.
-    @Override
-    public String toString()
-    {
-        StringBuilder builder = new StringBuilder();
+    public ArrayList<Edge> findAdjacent(String index){
+        Node node = getNode(index);
+        return node.getAdjacent();
+    }
+    public boolean isConnected(String source, String destination){
+        Node s = getNode(source);
+        Node d = getNode(destination);
 
-        for (T v : map.keySet()) {
-            builder.append(v.toString() + ": ");
-            for (T w : map.get(v)) {
-                builder.append(w.toString() + " ");
-            }
-            builder.append("\n");
-        }
-
-        return (builder.toString());
+        if(s.getAdjacent().contains(d) || d.getAdjacent().contains(s))
+            return true;
+        return false;
     }
 }
