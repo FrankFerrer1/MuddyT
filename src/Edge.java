@@ -1,24 +1,24 @@
-public class Edge{
-    private String destination;
+import java.util.*;
+class Edge {
+
+    private Vertex to;
     private int weight;
-    public Edge(String destination, int weight){
-        this.destination = destination;
+
+    public Edge(Vertex to, int weight) {
+        super();
+        this.to = to;
         this.weight = weight;
     }
 
-    public String getDestination() {
-        return destination;
+    Vertex getTo() {
+        return to;
     }
 
-    public void setDestination(String destination) {
-        this.destination = destination;
-    }
-
-    public int getWeight() {
+    int getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
-        this.weight = weight;
+    public String toString(){
+        return to.getLabel();
     }
 }

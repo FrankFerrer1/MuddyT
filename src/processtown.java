@@ -1,3 +1,6 @@
+import scala.Int;
+import scala.math.Equiv;
+
 import java.io.*;
 import java.util.*;
 
@@ -5,98 +8,97 @@ import java.util.*;
 public class processtown
 {
     public static void main(String[] args){
-        Scanner choiceIn = new Scanner(System.in);
-        String choice;
-        File file;
-        String fileIn;
-        String townName;
-        boolean continueMenu = true;
-
+        int vertexInc = 0;
         Graph graph = new Graph();
+        String townName = "";
+        //arraylist to store the lines to write to
+        ArrayList<String> writeList = new ArrayList<String>();
 
-        graph.add("1 First Street","2 First Street",3);
-        graph.add("1 Second Street","1 First Street",2);
-        graph.add("2 First Street","1 Second Street",3);
 
-        ArrayList<Edge> adjacent = graph.findAdjacent("1 Second Street");
-        System.out.print("Adjacent of 1 are: ");
-        for(Edge i: adjacent)
-            System.out.print(i.getDestination() + " weight:" + i.getWeight() + "\n");
+        File file = new File("MiniTown.dat");
+        System.out.println("Opening " + file + "...");
+        try {
+            int lineCounter = 0;
+            Scanner fileReader = new Scanner(file);
+            vertexInc = 0;
+            while (fileReader.hasNextLine()) {
+                String data = fileReader.nextLine();
+                if(lineCounter == 0){
+                    townName = data;
+                    System.out.println("TOWN NAME: " +  townName);
+                    writeList.add(townName);
+                    lineCounter++;
+                }else {
+                    writeList.add(data);
+                    String[] line = data.split(",");
+                    int lineWeight = Integer.parseInt(line[0]);
+                    String addressOne = line[1];
+                    String addressTwo = line[2];
+                    System.out.println(line[0] +"," + line[1] +"," + line[2]);
 
-        System.out.println("Please enter a choice");
-        System.out.print("Syntax: h [-option [parameter]]\n");
-        System.out.print("  options:\n");
-        System.out.print("       s   show current town in standard format\n");
-        System.out.print("       a   show current town in alternate format\n");
-        System.out.print("       r   read town data from file\n");
-        System.out.print("       w   write current town to file\n");
-        System.out.print("       v   show version\n");
-        System.out.print("       h   help (this display)\n");
-        System.out.print("       x   to exit\n");
+                    String vertex1Find = addressOne;
+                    String vertex2Find = addressTwo;
+                    Vertex v1 = null;
+                    Vertex v2 = null;
 
-        while (continueMenu) {
-            System.out.print("Please enter a choice: ");
-            choice = choiceIn.next();
-            switch (choice) {
-                case "a":
-                    System.out.println("you pressed a");
-                    // TODO Show the current town in alternate format.
-                    break;
-                case "r":
-                    System.out.println("Please enter the file you wish to load");
-                    fileIn = choiceIn.next();
-                    file = new File(fileIn);
-                    System.out.println("Opening " + fileIn + "...");
-                    try {
-                        int lineCounter = 0;
-                        Scanner fileReader = new Scanner(file);
-                        while (fileReader.hasNextLine()) {
-                            String data = fileReader.nextLine();
-                            if(lineCounter == 0){
-                                townName = data;
-                                System.out.println("TOWN NAME: " +  townName);
-                                lineCounter++;
-                            }else {
-                                String[] line = data.split(",");
-                                int lineWeight = Integer.parseInt(line[0]);
-                                String roadOne = line[1];
-                                String roadTwo = line[2];
-                                System.out.println("Source: " + roadOne +", Destination: " + roadTwo +", weight = " + lineWeight);
-                            }
+                    for(Vertex vertex : graph.getVertices()){
+                        if(vertex.getLabel().equals(vertex1Find)){
+                            v1 = vertex;
                         }
-                    }catch(FileNotFoundException e){
-                        System.out.println("File not Found.");
-                        break;
+                        if(vertex.getLabel().equals(vertex2Find)){
+                            v2 = vertex;
+                        }
                     }
-                    break;
-                case "s":
-                    System.out.println("you pressed s");
-                    break;
-                case "v":
-                    System.out.println("you pressed v");
-                    break;
-                case "w":
-                    System.out.println("you pressed w");
-                    // TODO Write town data to file whose name is given in optarg.
-                    break;
-                case "h":
-                    System.out.print("Syntax: h [-option [parameter]]\n");
-                    System.out.print("  options:\n");
-                    System.out.print("       s   show current town in standard format\n");
-                    System.out.print("       a   show current town in alternate format\n");
-                    System.out.print("       r   read town data from file identified by parameter\n");
-                    System.out.print("       w   write current town to file identified by parameter\n");
-                    System.out.print("       v   show version\n");
-                    System.out.print("       h   help (this display)\n");
-                    break;
-                case "x":
-                    System.out.println("Goodbye");
-                    continueMenu = false;
-                    break;
-                default:
-                    System.out.println("Argument not understood, enter h for options");
-                    break;
+                    if(v1 == null){
+                        v1 = new Vertex(vertexInc, vertex1Find);
+                        graph.addVertex(v1);
+                        vertexInc+=1;
+                    }
+                    if(v2 == null){
+                        v2 = new Vertex(vertexInc, vertex2Find);
+                        graph.addVertex(v2);
+                        vertexInc+=1;
+                    }
+
+                    v1.addEdge(new Edge(v2, lineWeight)); //connect v1 v2
+                    v2.addEdge(new Edge(v1, lineWeight));
+                }
+            }
+            fileReader.close();
+        }catch(FileNotFoundException e){
+            System.out.println("File not Found.");
+        }
+
+        System.out.println("\n");
+        System.out.println("Is this graph connected? " + graph.isConnected(graph));
+
+        writeList = write("Poopie",writeList);
+
+    }
+
+    /**
+     * Method to write to file
+     * @param fileName filename to be written to, will automatically add a .dat for the extension
+     * @param writeList ArrayList to be used to write to file
+     * @return returns an empty list for re-use purposes
+     */
+    public static ArrayList<String> write(String fileName, ArrayList<String> writeList){
+        if(writeList.isEmpty()){
+            System.out.println("Error, nothing to write");
+        }else{
+            try {
+                PrintWriter writer = new PrintWriter(fileName +".dat");
+                System.out.println("Writing");
+                for (String i : writeList) {
+                    writer.println(i);
+                }
+                writer.close();
+            }catch(IOException e){
+                e.printStackTrace();
             }
         }
+        //clear writeList for new write
+        writeList.clear();
+        return writeList;
     }
 }

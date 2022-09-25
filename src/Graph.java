@@ -1,40 +1,55 @@
-/**
- * Class that holds the graph data structure and related operations
- */
 import java.util.*;
-public class Graph{
-    private static HashMap<String,Node> graph = new HashMap<String,Node>();
-    public void add(String source, String destination, int weight){
 
-        //Get nodes corresponding to source and destination vertices.
-        Node s = getNode(source);
-        Node d = getNode(destination);
+class Graph{
+    private int numVertices;
+    private Set<Vertex> vertices; //collection of all verices
 
-        //add nodes to adjacent list
-        s.addAdjacent(destination,weight);
-        d.addAdjacent(source,weight);
+    public Graph() {
+        vertices = new HashSet<>();
     }
 
-    private static Node getNode(String id){
-        if(graph.containsKey(id))
-            return graph.get(id);
-        else{
-            Node node = new Node(id);
-            graph.put(id, node);
-            return node;
+    Set<Vertex> getVertices() {
+        return vertices;
+    }
+
+    boolean addVertex(Vertex vertex){
+        return vertices.add(vertex);
+    }
+
+    public boolean  isConnected(Graph graph){
+        //number of Vertices that are in the graph
+        numVertices = graph.getVertices().size();
+        //create new boolean array of the vertices to be visited
+        boolean[] visited = new boolean[numVertices];
+
+        visited = DFS(0,graph,visited);
+        for(int i = 0 ; i < visited.length; i++){
+            if(visited[i] == false){
+                return false;
+            }
         }
+        return true;
     }
-
-    public ArrayList<Edge> findAdjacent(String index){
-        Node node = getNode(index);
-        return node.getAdjacent();
-    }
-    public boolean isConnected(String source, String destination){
-        Node s = getNode(source);
-        Node d = getNode(destination);
-
-        if(s.getAdjacent().contains(d) || d.getAdjacent().contains(s))
-            return true;
-        return false;
+    private boolean[] DFS(int source, Graph graph, boolean[] visited){
+        //Mark starting node as visited
+        visited[source] = true;
+        //Iterate through the vertices in the node
+        for(Vertex vertex : graph.getVertices()){
+            int tmp = vertex.getId();
+            System.out.println(tmp);
+            //Iterate through all of the vertices connected to this vertex
+            for(Edge edge : vertex.getEdges()){
+                //retrieve the Node that is at connected
+                Vertex temp = edge.getTo();
+                //retrieve ID of node
+                int index = temp.getId();
+                //If the node has not been visited, mark as visited
+                if(visited[index] == false){
+                    visited[index] = true;
+                }
+                System.out.println("Connected To: " + temp.getId());
+            }
+        }
+        return visited;
     }
 }
