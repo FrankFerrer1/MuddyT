@@ -6,9 +6,9 @@ class Vertex {
     private String label;
     private Set<Edge> edges; //collection of edges to neighbors
 
-    public Vertex(int id, String pageObject) {
+    public Vertex(int id, String label) {
         this.id = id;
-        this.label = pageObject;
+        this.label = label;
         edges = new HashSet<>();
     }
 

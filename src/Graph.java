@@ -18,7 +18,7 @@ class Graph{
 
     public boolean  isConnected(Graph graph){
         //number of Vertices that are in the graph
-        numVertices = graph.getVertices().size();
+        numVertices = graph.size();
         //create new boolean array of the vertices to be visited
         boolean[] visited = new boolean[numVertices];
 
@@ -30,7 +30,11 @@ class Graph{
         }
         return true;
     }
-    private boolean[] DFS(int source, Graph graph, boolean[] visited){
+
+    public int size(){
+        return vertices.size();
+    }
+    public boolean[] DFS(int source, Graph graph, boolean[] visited){
         //Mark starting node as visited
         visited[source] = true;
         //Iterate through the vertices in the node
@@ -47,7 +51,6 @@ class Graph{
                 if(visited[index] == false){
                     visited[index] = true;
                 }
-                System.out.println("Connected To: " + temp.getId());
             }
         }
         return visited;
