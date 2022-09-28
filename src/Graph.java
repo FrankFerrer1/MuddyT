@@ -1,7 +1,6 @@
 import java.util.*;
 
 class Graph{
-    private int numVertices;
     private Set<Vertex> vertices; //collection of all verices
 
     public Graph() {
@@ -16,9 +15,13 @@ class Graph{
         return vertices.add(vertex);
     }
 
-    public boolean  isConnected(Graph graph){
-        //number of Vertices that are in the graph
-        numVertices = graph.size();
+    /**
+     * function to see if a graph is connected
+     * @param graph graph to be used to traverse through
+     * @praam numVertices # of vertices in graph
+     * @return return true if everything is ocnnected, false if not
+     */
+    public boolean  isConnected(Graph graph, int numVertices){
         //create new boolean array of the vertices to be visited
         boolean[] visited = new boolean[numVertices];
 
@@ -34,13 +37,20 @@ class Graph{
     public int size(){
         return vertices.size();
     }
+
+    /**
+     * Helper functions for is connected, performs a DFS to see if all the vertices can be visited
+     * @param source initial vertex that is marked as visited
+     * @param graph the graph to traverse through
+     * @param visited boolean array to see if the correct number of nodes have been visited, size
+     *                matches the graph.size (# of vertices)
+     * @return returns the boolean node to be iterated through
+     */
     public boolean[] DFS(int source, Graph graph, boolean[] visited){
         //Mark starting node as visited
         visited[source] = true;
         //Iterate through the vertices in the node
         for(Vertex vertex : graph.getVertices()){
-            int tmp = vertex.getId();
-            System.out.println(tmp);
             //Iterate through all of the vertices connected to this vertex
             for(Edge edge : vertex.getEdges()){
                 //retrieve the Node that is at connected
