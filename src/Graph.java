@@ -1,3 +1,5 @@
+
+
 import java.util.*;
 
 class Graph{
@@ -25,7 +27,7 @@ class Graph{
         //create new boolean array of the vertices to be visited
         boolean[] visited = new boolean[numVertices];
 
-        visited = DFS(0,graph,visited);
+        visited = DFS(graph,visited);
         for(int i = 0 ; i < visited.length; i++){
             if(visited[i] == false){
                 return false;
@@ -40,17 +42,21 @@ class Graph{
 
     /**
      * Helper functions for is connected, performs a DFS to see if all the vertices can be visited
-     * @param source initial vertex that is marked as visited
      * @param graph the graph to traverse through
      * @param visited boolean array to see if the correct number of nodes have been visited, size
      *                matches the graph.size (# of vertices)
      * @return returns the boolean node to be iterated through
      */
-    public boolean[] DFS(int source, Graph graph, boolean[] visited){
-        //Mark starting node as visited
-        visited[source] = true;
+    public boolean[] DFS(Graph graph, boolean[] visited){
+
+        boolean firstVisit = false;
         //Iterate through the vertices in the node
         for(Vertex vertex : graph.getVertices()){
+            //Mark starting node as visited
+            if(firstVisit == false){
+                visited[vertex.getId()] = true;
+                firstVisit = true;
+            }
             //Iterate through all of the vertices connected to this vertex
             for(Edge edge : vertex.getEdges()){
                 //retrieve the Node that is at connected
@@ -64,5 +70,16 @@ class Graph{
             }
         }
         return visited;
+    }
+
+    public Vertex findVertex(String name){
+        for(Vertex vertex : getVertices()){
+            if(vertex.getLabel().equals(name)){
+                return vertex;
+            }
+
+        }
+        System.out.println("Nothing found");
+        return null;
     }
 }
