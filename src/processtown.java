@@ -21,10 +21,11 @@ public class processtown
         System.out.println("Please enter a choice");
         System.out.print("Syntax: h [-option [parameter]]\n");
         System.out.print("  options:\n");
-        System.out.print("       s   show current town in standard format\n");
+        System.out.print("       s   show current town\n");
         System.out.print("       r   read town data from file\n");
         System.out.print("       w   write current town to file\n");
         System.out.print("       g   generate graph\n");
+        System.out.print("       gp   generate paving plan\n");
         System.out.print("       l   load paving plan\n");
         System.out.print("       h   help (this display)\n");
         System.out.print("       x   to exit\n");
@@ -121,14 +122,25 @@ public class processtown
                         write(fileOut,writeList);
                     }
                     break;
+                case "wp":
+                    if(writePlan.isEmpty()){
+                        System.out.println("Error: No plan data loaded");
+                    }else{
+                        System.out.println("Enter name of file you wish to save");
+                        System.out.println("Note, the program will automatically add a .dat extension");
+                        fileOut = choiceIn.next();
+                        write(fileOut,writePlan);
+                    }
+                    break;
                 case "h":
                     System.out.print("Syntax: h [-option [parameter]]\n");
                     System.out.print("  options:\n");
-                    System.out.print("       s   show current town in standard format\n");
+                    System.out.print("       s   show current town\n");
                     System.out.print("       r   read town data from file\n");
                     System.out.print("       w   write current town to file\n");
                     System.out.print("       g   generate graph\n");
                     System.out.print("       l   load paving plan\n");
+                    System.out.print("       wp   write current plan to file\n");
                     System.out.print("       h   help (this display)\n");
                     System.out.print("       x   to exit\n");
                     break;
@@ -257,6 +269,11 @@ public class processtown
         return buildingARr;
     }
 
+
+    public static Graph readGraph(Graph graph, String fileName){
+        Graph returnGraph = new Graph();
+
+    }
     /**
      * method to read a planned graph from a file and then add edge values to the plan
      * @param graph graph that the plan will be used for
@@ -383,7 +400,12 @@ public class processtown
             return planGraph.isConnected(planGraph,planGraph.size()+1);
     }
 
-
+    /**
+     * Verifies the minimin cost of the plan
+     * @param graph graph to be sed for verifcation
+     * @param planCost the plan cost derived from the plan
+     * @return returns whether or not it is indeed the minimum cost
+     */
     public static boolean verifyMinCost(Graph graph, int planCost){
         int minTotal = 0;
         boolean[] visited = new boolean[graph.size()];
@@ -408,7 +430,11 @@ public class processtown
         return planCost <= minTotal;
     }
 
-
+    /**
+     * Creates a min cost paving plan for graph
+     * @param graph graph to be used to develop minimum cost for
+     * @return returns a minimum cost graph
+     */
     public static Graph createMinCost(Graph graph){
         String planName;
         Scanner sc = new Scanner(System.in);
@@ -417,36 +443,40 @@ public class processtown
         int minTotal = 0;
         boolean[] visited = new boolean[graph.size()];
 
-        System.out.print("Enter plan name: ");
-        planName = "\"" + sc.nextLine() + "\"" ;
-        writePlan.add(planName);
-        for(Vertex vertex : graph.getVertices()){
-            visited[vertex.getId()] = true;
-            //Iterate through all of the vertices connected to this vertex
-            for(Edge edge : vertex.getEdges()){
-                //retrieve the Node that is at connected
-                Vertex temp = edge.getTo();
-                //retrieve ID of node
-                int index = temp.getId();
-                int minCost = Integer.MAX_VALUE;
-                //If the node has not been visited, mark as visited
-                if(visited[index] == false){
-                    if(edge.getWeight() < minCost){
-                        int weight = edge.getWeight();
-                        Vertex tmp = new Vertex(vertex.getId(),vertex.getLabel());
-                        tmp.addEdge(new Edge(edge.getTo(),weight));
-                        returnGraph.addVertex(tmp);
-                        System.out.println(vertex.getLabel() + "," + edge.getTo().getLabel() + "Cost: " + edge.getWeight());
-                        writePlan.add(vertex.getLabel() + "," + edge.getTo().getLabel());
-                        minCost = edge.getWeight();
-                        minTotal += minCost;
+        if(graph == null){
+            System.out.println("ERROR: No graph loaded");
+        }
+        else{
+            System.out.print("Enter plan name: ");
+            planName = "\"" + sc.nextLine() + "\"" ;
+            writePlan.add(planName);
+            for(Vertex vertex : graph.getVertices()){
+                visited[vertex.getId()] = true;
+                //Iterate through all of the vertices connected to this vertex
+                for(Edge edge : vertex.getEdges()){
+                    //retrieve the Node that is at connected
+                    Vertex temp = edge.getTo();
+                    //retrieve ID of node
+                    int index = temp.getId();
+                    int minCost = Integer.MAX_VALUE;
+                    //If the node has not been visited, mark as visited
+                    if(visited[index] == false){
+                        if(edge.getWeight() < minCost){
+                            int weight = edge.getWeight();
+                            Vertex tmp = new Vertex(vertex.getId(),vertex.getLabel());
+                            tmp.addEdge(new Edge(edge.getTo(),weight));
+                            returnGraph.addVertex(tmp);
+                            System.out.println(vertex.getLabel() + "," + edge.getTo().getLabel() + "Cost: " + edge.getWeight());
+                            writePlan.add(vertex.getLabel() + "," + edge.getTo().getLabel());
+                            minCost = edge.getWeight();
+                            minTotal += minCost;
+                        }
+                        System.out.println("Total Cost: " + minTotal);
+                        visited[index] = true;
                     }
-                    System.out.println("Total Cost: " + minTotal);
-                    visited[index] = true;
                 }
             }
         }
-
 
         return returnGraph;
     }
